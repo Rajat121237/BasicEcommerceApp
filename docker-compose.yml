@@ -12,7 +12,7 @@ services:
   hostname: mysql-host-productsmicroservice
 
  products-microservice:
-  image: rajatpandey121237/products-microservice:v1.0
+  image: rajatpandey121237/ecommerce-products-microservice:v1.0
   environment:
    MYSQL_HOST: mysql-host-productsmicroservice
    MYSQL_PASSWORD: admin
