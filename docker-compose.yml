@@ -35,7 +35,7 @@ services:
          - ecommerce-network
 
    users-microservice:
-      image: ecommerce-users-microservice:v1.0
+      image: rajatpandey121237/ecommerce-users-microservice:v1.0
       entrypoint:
          - POSTGRES_HOST=postgres-container
          - POSTGRES_PASSWORD=admin
