@@ -4,8 +4,8 @@
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
 USER $APP_UID
 WORKDIR /app
-EXPOSE 8080
-EXPOSE 8081
+EXPOSE 9090
+EXPOSE 9091
 
 
 # This stage is used to build the service project
@@ -27,10 +27,9 @@ RUN dotnet publish "./eCommerce.API.csproj" -c $BUILD_CONFIGURATION -o /app/publ
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+ENV POSTGRES_HOST=localhost
+ENV POSTGRES_PASSWORD=admin
 ENTRYPOINT ["dotnet", "eCommerce.API.dll"]
-
-#docker build -t my-user-app:initial -f ./eCommerce.API/Dockerfile .
-#docker run -p 8080:8080 -p 8081:8081 my-user-app:initial
 
 #Technique -> Benefit -> When to Use
 #Layer Caching      ->	Faster builds, less network usage											->	Always, especially with Docker
