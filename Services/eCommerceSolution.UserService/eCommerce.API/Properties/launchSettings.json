@@ -12,7 +12,8 @@
         "POSTGRES_PASSWORD": "admin"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5031"
+      "applicationUrl": "http://localhost:5031",
+      "launchUrl": "swagger"
     },
     "https": {
       "commandName": "Project",

@@ -29,6 +29,9 @@ WORKDIR /app
 COPY --from=publish /app/publish .
 ENV MYSQL_HOST=localhost
 ENV MYSQL_PASSWORD=admin
+ENV MYSQL_PORT=3306
+ENV MYSQL_DATABASE=ecommerceproductsdatabase
+ENV MYSQL_USER=root
 ENTRYPOINT ["dotnet", "ProductsMicroService.API.dll"]
 
 # When building Image & running the container initially. Throws error because the database container is not available yet.

@@ -4,16 +4,27 @@
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PASSWORD": "admin",
+        "MYSQL_PORT": "3306",
+        "MYSQL_DATABASE": "ecommerceproductsdatabase",
+        "MYSQL_USER": "root"
       },
       "dotnetRunMessages": true,
-      "applicationUrl": "http://localhost:5048"
+      "applicationUrl": "http://localhost:5048",
+      "launchUrl": "swagger"
     },
     "https": {
       "commandName": "Project",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PASSWORD": "admin",
+        "MYSQL_PORT": "3306",
+        "MYSQL_DATABASE": "ecommerceproductsdatabase",
+        "MYSQL_USER": "root"
       },
       "dotnetRunMessages": true,
       "applicationUrl": "https://localhost:7137;http://localhost:5048",
@@ -23,7 +34,12 @@
       "commandName": "IISExpress",
       "launchBrowser": true,
       "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PASSWORD": "admin",
+        "MYSQL_PORT": "3306",
+        "MYSQL_DATABASE": "ecommerceproductsdatabase",
+        "MYSQL_USER": "root"
       }
     },
     "Container (Dockerfile)": {
@@ -32,7 +48,12 @@
       "launchUrl": "{Scheme}://{ServiceHost}:{ServicePort}",
       "environmentVariables": {
         "ASPNETCORE_HTTPS_PORTS": "8081",
-        "ASPNETCORE_HTTP_PORTS": "8080"
+        "ASPNETCORE_HTTP_PORTS": "8080",
+        "MYSQL_HOST": "localhost",
+        "MYSQL_PASSWORD": "admin",
+        "MYSQL_PORT": "3306",
+        "MYSQL_DATABASE": "ecommerceproductsdatabase",
+        "MYSQL_USER": "root"
       },
       "publishAllPorts": true,
       "useSSL": true

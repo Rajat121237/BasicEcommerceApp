@@ -15,11 +15,14 @@ public static class ProductAPIEndpoints
         });
 
         //GET: /api/products/search/product-id/{productID}
-        app.MapGet("/api/products/search/product-id/{productID}", 
-            async (IProductsService productsService, Guid productID) => {
-            ProductResponse? product = await productsService.GetProductByCondition(temp => temp.ProductID == productID);
-            return Results.Ok(product);
-        });
+        app.MapGet("/api/products/search/product-id/{productID}",
+            async (IProductsService productsService, Guid productID) =>
+            {
+                ProductResponse? product = await productsService.GetProductByCondition(temp => temp.ProductID == productID);
+                if (product == null)
+                    return Results.NotFound($"Product with ID {productID} not found.");
+                return Results.Ok(product);
+            });
 
         //GET /api/products/search/{SearchString}
         app.MapGet("/api/products/search/{SearchString}", async (IProductsService productsService, string SearchString) =>
