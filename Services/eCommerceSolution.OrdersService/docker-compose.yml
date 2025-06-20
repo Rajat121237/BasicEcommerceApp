@@ -1,0 +1,16 @@
+services:
+  ordersmicroservice.api:
+    image: ordersmicroserviceapi
+    build:
+      context: .
+      dockerfile: OrdersMicroservice.API/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:8080
+      - MONGODB_HOST=localhost
+      - MONGODB_DATABASE=OrdersDatabase
+      - MONGODB_PORT=27017
+      - UsersMicroserviceName=localhost
+      - UsersMicroservicePort=5050
+    ports:
+       - "7000:8080"
