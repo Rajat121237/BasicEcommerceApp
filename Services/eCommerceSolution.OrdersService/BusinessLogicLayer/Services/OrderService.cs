@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using BusinessLogicLayer.HttpClients;
 using eCommerce.OrdersMicroservice.BusinessLogicLayer.DTO;
 using eCommerce.OrdersMicroservice.BusinessLogicLayer.ServiceContracts;
 using eCommerce.OrdersMicroservice.DataAccessLayer.Entities;
@@ -15,15 +16,17 @@ public class OrdersService : IOrdersService
     private readonly IValidator<OrderItemAddRequest> _orderItemAddRequestValidator;
     private readonly IValidator<OrderUpdateRequest> _orderUpdateRequestValidator;
     private readonly IValidator<OrderItemUpdateRequest> _orderItemUpdateRequestValidator;
+    private readonly UsersMicroserviceClient _usersMicroserviceClient;
     private IOrdersRepository _ordersRepository;
     private readonly IMapper _mapper;
 
-    public OrdersService(IOrdersRepository ordersRepository, IMapper mapper, IValidator<OrderAddRequest> orderAddRequestValidator, IValidator<OrderItemAddRequest> orderItemAddRequestValidator, IValidator<OrderUpdateRequest> orderUpdateRequestValidator, IValidator<OrderItemUpdateRequest> orderItemUpdateRequestValidator)
+    public OrdersService(IOrdersRepository ordersRepository, IMapper mapper, IValidator<OrderAddRequest> orderAddRequestValidator, IValidator<OrderItemAddRequest> orderItemAddRequestValidator, IValidator<OrderUpdateRequest> orderUpdateRequestValidator, IValidator<OrderItemUpdateRequest> orderItemUpdateRequestValidator, UsersMicroserviceClient usersMicroserviceClient)
     {
         _orderAddRequestValidator = orderAddRequestValidator;
         _orderItemAddRequestValidator = orderItemAddRequestValidator;
         _orderUpdateRequestValidator = orderUpdateRequestValidator;
         _orderItemUpdateRequestValidator = orderItemUpdateRequestValidator;
+        _usersMicroserviceClient = usersMicroserviceClient;
         _ordersRepository = ordersRepository;
         _mapper = mapper;
     }
@@ -73,6 +76,13 @@ public class OrdersService : IOrdersService
             }
         }
 
+        //TODO: Add logic for checking if the user exists in the Users Microservice
+        UserDTO? user = await _usersMicroserviceClient.GetUserByUserID(orderAddRequest.UserID);
+        if (user is null)
+        {
+            throw new ArgumentException($"User with ID {orderAddRequest.UserID} does not exist.");
+        }
+
         Order orderInput = _mapper.Map<Order>(orderAddRequest);
         foreach (var orderItem in orderInput.OrderItems)
         {
@@ -109,6 +119,13 @@ public class OrdersService : IOrdersService
                 string errors = string.Join(", ", orderItemUpdateRequestValidationResult.Errors.Select(e => e.ErrorMessage));
                 throw new ArgumentException(errors);
             }
+        }
+
+        //TODO: Add logic for checking if the user exists in the Users Microservice
+        UserDTO? user = await _usersMicroserviceClient.GetUserByUserID(orderUpdateRequest.UserID);
+        if (user is null)
+        {
+            throw new ArgumentException($"User with ID {orderUpdateRequest.UserID} does not exist.");
         }
 
         Order orderInput = _mapper.Map<Order>(orderUpdateRequest);
