@@ -56,8 +56,6 @@ public class OrdersService : IOrdersService
                 _mapper.Map<UserDTO, OrderResponse>(user, orderResponse);
         }
 
-
-
         return orderResponses;
     }
 
