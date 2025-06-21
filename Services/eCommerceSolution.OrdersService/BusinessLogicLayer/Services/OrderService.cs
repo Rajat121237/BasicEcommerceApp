@@ -38,6 +38,7 @@ public class OrdersService : IOrdersService
         List<Order?> orders = (await _ordersRepository.GetOrders()).ToList();
         List<OrderResponse?> orderResponses = _mapper.Map<List<OrderResponse?>>(orders);
 
+        //Load productname & category for each order item from Products Microservice
         foreach (var orderResponse in orderResponses)
         {
             if (orderResponse == null) continue;
@@ -48,7 +49,15 @@ public class OrdersService : IOrdersService
                 if(productDTO == null) continue;
                 _mapper.Map<ProductDTO, OrderItemResponse>(productDTO, orderItemResponse);
             }
+
+           //Load userpersonname & email from Users Microservice
+           UserDTO? user = await _usersMicroserviceClient.GetUserByUserID(orderResponse.UserID);
+            if (user is not null) 
+                _mapper.Map<UserDTO, OrderResponse>(user, orderResponse);
         }
+
+
+
         return orderResponses;
     }
 
@@ -57,6 +66,7 @@ public class OrdersService : IOrdersService
         List<Order?> orders = (await _ordersRepository.GetOrdersByCondition(filter)).ToList();
         List<OrderResponse?> orderResponses = _mapper.Map<List<OrderResponse?>>(orders);
 
+        //Load productname & category for each order item from Products Microservice
         foreach (var orderResponse in orderResponses)
         {
             if (orderResponse == null) continue;
@@ -67,6 +77,11 @@ public class OrdersService : IOrdersService
                 if (productDTO == null) continue;
                 _mapper.Map<ProductDTO, OrderItemResponse>(productDTO, orderItemResponse);
             }
+
+            //Load userpersonname & email from Users Microservice
+            UserDTO? user = await _usersMicroserviceClient.GetUserByUserID(orderResponse.UserID);
+            if (user is not null)
+                _mapper.Map<UserDTO, OrderResponse>(user, orderResponse);
         }
         return orderResponses;
     }
@@ -74,12 +89,11 @@ public class OrdersService : IOrdersService
     public async Task<OrderResponse?> GetOrderByCondition(FilterDefinition<Order> filter)
     {
         Order? order = await _ordersRepository.GetOrderByCondition(filter);
-        if (order is null)
-        {
-            return null;
-        }
+        if (order is null) return null;
+
         OrderResponse? orderResponse = _mapper.Map<OrderResponse>(order);
 
+        //Load productname & category for each order item from Products Microservice
         if (orderResponse is not null)
         {
             foreach (var orderItemResponse in orderResponse.OrderItems)
@@ -88,6 +102,11 @@ public class OrdersService : IOrdersService
                 if (productDTO == null) continue;
                 _mapper.Map<ProductDTO, OrderItemResponse>(productDTO, orderItemResponse);
             }
+
+            //Load userpersonname & email from Users Microservice
+            UserDTO? user = await _usersMicroserviceClient.GetUserByUserID(orderResponse.UserID);
+            if (user is not null)
+                _mapper.Map<UserDTO, OrderResponse>(user, orderResponse);
         }
         return orderResponse;
     }
@@ -155,6 +174,9 @@ public class OrdersService : IOrdersService
                 if (productDTO == null) continue;
                 _mapper.Map<ProductDTO, OrderItemResponse>(productDTO, orderItemResponse);
             }
+
+            //Load userpersonname & email from Users Microservice
+            _mapper.Map<UserDTO, OrderResponse>(user, addedOrderResponse);
         }
         return addedOrderResponse;
     }
@@ -220,6 +242,8 @@ public class OrdersService : IOrdersService
                 if (productDTO == null) continue;
                 _mapper.Map<ProductDTO, OrderItemResponse>(productDTO, orderItemResponse);
             }
+            //Load userpersonname & email from Users Microservice
+            _mapper.Map<UserDTO, OrderResponse>(user, updatedOrderResponse);
         }
         return updatedOrderResponse;
     }
