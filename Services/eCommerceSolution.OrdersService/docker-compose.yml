@@ -42,7 +42,7 @@ services:
       - MYSQL_USER=root
       - MYSQL_PASSWORD=admin
     ports:
-     - "6000:8080"
+     - "6001:8080"
     networks:
      - products-mysql-network
      - ecommerce-network
@@ -100,3 +100,19 @@ networks:
   driver: bridge
  ecommerce-network:
     driver: bridge
+    
+# To Build, Tag & Push the images, you can use the following commands:
+
+# docker login --username rajatpandey121237 --password <your-password>
+
+# docker build -t products-microservice:latest -f ./ProductsMicroService.API/Dockerfile .
+# docker tag products-microservice:latest rajatpandey121237/products-microservice:v1.0
+# docker push rajatpandey121237/products-microservice:v1.0
+
+# docker build -t users-microservice:latest -f ./eCommerce.API/Dockerfile .
+# docker tag users-microservice:latest rajatpandey121237/users-microservice:v1.0
+# docker push rajatpandey121237/users-microservice:v1.0
+
+# docker build -t orders-microservice:latest -f ./OrdersMicroservice.API/Dockerfile .
+# docker tag orders-microservice:latest rajatpandey121237/orders-microservice:v1.0
+# docker push rajatpandey121237/orders-microservice:v1.0
