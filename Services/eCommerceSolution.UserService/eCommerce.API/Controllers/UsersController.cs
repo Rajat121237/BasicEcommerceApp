@@ -1,4 +1,5 @@
-﻿using eCommerce.Core.DTO;
+﻿using eCommerce.API.Simulation;
+using eCommerce.Core.DTO;
 using eCommerce.Core.ServiceContracts;
 using Microsoft.AspNetCore.Mvc;
 
@@ -18,7 +19,10 @@ public class UsersController : ControllerBase
     [HttpGet("{userID}")]
     public async Task<IActionResult> GetUserByUserID(Guid userID)
     {
-        if(userID == Guid.Empty)
+        // Simulate an error for demonstration purposes
+        await ErrorSimulator.GetError();
+
+        if (userID == Guid.Empty)
         {
             return BadRequest("Invalid user ID");
         }
