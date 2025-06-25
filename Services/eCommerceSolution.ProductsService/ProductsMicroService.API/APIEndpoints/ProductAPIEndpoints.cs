@@ -2,6 +2,7 @@
 using eCommerce.BusinessLogicLayer.ServiceContracts;
 using FluentValidation;
 using FluentValidation.Results;
+using ProductsMicroService.API.Simulation;
 
 namespace eCommerce.ProductsMicroService.API.APIEndpoints;
 public static class ProductAPIEndpoints
@@ -18,6 +19,8 @@ public static class ProductAPIEndpoints
         app.MapGet("/api/products/search/product-id/{productID}",
             async (IProductsService productsService, Guid productID) =>
             {
+                //Simulate an error for demonstration purposes
+                await ErrorSimulator.GetError();
                 ProductResponse? product = await productsService.GetProductByCondition(temp => temp.ProductID == productID);
                 if (product == null)
                     return Results.NotFound($"Product with ID {productID} not found.");
