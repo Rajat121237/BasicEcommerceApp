@@ -2,6 +2,7 @@
 using eCommerce.OrdersMicroservice.BusinessLogicLayer.DTO;
 using Microsoft.Extensions.Logging;
 using Polly.CircuitBreaker;
+using Polly.Timeout;
 using System.Net.Http.Json;
 
 namespace BusinessLogicLayer.HttpClients;
@@ -35,6 +36,7 @@ public class UsersMicroserviceClient
                 else
                 {
                     //throw new HttpRequestException($"Http request failed with status code {response.StatusCode}");
+                    //Below return statement is used to return a fallback data in case of retry policy.
                     return new UserDTO(Guid.Empty, "Temporarily UnAvailable", "Temporarily UnAvailable", "Temporarily UnAvailable");
                 }
             }
@@ -50,6 +52,11 @@ public class UsersMicroserviceClient
         {
             _logger.LogInformation("Circuit breaker is open, returning a temporary user");
             return new UserDTO(Guid.Empty, "Temporarily UnAvailable(BrokenCircuit)", "Temporarily UnAvailable(BrokenCircuit)", "Temporarily UnAvailable(BrokenCircuit)");
+        }
+        catch (TimeoutRejectedException ex)
+        {
+            _logger.LogInformation("Timeout occured while fetching user data, returning a temporary user");
+            return new UserDTO(Guid.Empty, "Temporarily UnAvailable(Timeout)", "Temporarily UnAvailable(Timeout)", "Temporarily UnAvailable(Timeout)");
         }
     }
 }

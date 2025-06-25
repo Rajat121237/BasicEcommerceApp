@@ -20,7 +20,8 @@ public class UsersController : ControllerBase
     public async Task<IActionResult> GetUserByUserID(Guid userID)
     {
         // Simulate an error for demonstration purposes
-        await ErrorSimulator.GetError();
+        //await ErrorSimulator.GetError();
+        await ErrorSimulator.AddDelayInMilliseconds(10000);
 
         if (userID == Guid.Empty)
         {

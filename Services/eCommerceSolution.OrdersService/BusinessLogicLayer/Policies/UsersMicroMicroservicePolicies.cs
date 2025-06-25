@@ -2,6 +2,8 @@
 using Polly;
 using Polly.CircuitBreaker;
 using Polly.Retry;
+using Polly.Timeout;
+using Polly.Wrap;
 
 namespace eCommerce.OrdersMicroservice.BusinessLogicLayer.Policies;
 public class UsersMicroMicroservicePolicies : IUsersMicroMicroservicePolicies
@@ -15,7 +17,7 @@ public class UsersMicroMicroservicePolicies : IUsersMicroMicroservicePolicies
     public IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
     {
         AsyncRetryPolicy<HttpResponseMessage>  retryPolicy = Policy.HandleResult<HttpResponseMessage>(response => !response.IsSuccessStatusCode)
-            .WaitAndRetryAsync(retryCount: 3, sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
+            .WaitAndRetryAsync(retryCount: 5, sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
             onRetry: (outcome, timespan, retryCount, context) =>
             {
                 _logger.LogInformation($"Retry {retryCount} due to {outcome.Result.StatusCode} at {DateTime.UtcNow}. Retrying in {timespan.TotalSeconds} seconds.");
@@ -36,5 +38,20 @@ public class UsersMicroMicroservicePolicies : IUsersMicroMicroservicePolicies
                 _logger.LogInformation("Circuit breaker reset, allowing requests to pass through again.");
             });
         return circuitPolicy;
+    }
+
+    public IAsyncPolicy<HttpResponseMessage> GetTimeoutPolicy()
+    {
+        AsyncTimeoutPolicy<HttpResponseMessage> timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromMilliseconds(1500));
+        return timeoutPolicy;
+    }
+
+    public IAsyncPolicy<HttpResponseMessage> GetCombinedPolicy()
+    {
+        var retryPolicy = GetRetryPolicy();
+        var circuitBreakerPolicy = GetCircuitBreakerPolicy();
+        var timeoutPolicy = GetTimeoutPolicy();
+        AsyncPolicyWrap<HttpResponseMessage> combinedPolicy =  Policy.WrapAsync(retryPolicy, circuitBreakerPolicy, timeoutPolicy);
+        return combinedPolicy;
     }
 }
