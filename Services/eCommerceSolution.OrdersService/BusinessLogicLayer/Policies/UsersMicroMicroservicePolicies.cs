@@ -1,56 +1,23 @@
 ﻿using Microsoft.Extensions.Logging;
 using Polly;
-using Polly.CircuitBreaker;
-using Polly.Retry;
-using Polly.Timeout;
 using Polly.Wrap;
 
 namespace eCommerce.OrdersMicroservice.BusinessLogicLayer.Policies;
 public class UsersMicroMicroservicePolicies : IUsersMicroMicroservicePolicies
 {
     private readonly ILogger<UsersMicroMicroservicePolicies> _logger;
-    public UsersMicroMicroservicePolicies(ILogger<UsersMicroMicroservicePolicies> logger)
+    private readonly IPollyPolicies _pollyPolicies;
+    public UsersMicroMicroservicePolicies(ILogger<UsersMicroMicroservicePolicies> logger, IPollyPolicies pollyPolicies)
     {
         _logger = logger;
+        _pollyPolicies = pollyPolicies;
     }
-
-    public IAsyncPolicy<HttpResponseMessage> GetRetryPolicy()
-    {
-        AsyncRetryPolicy<HttpResponseMessage>  retryPolicy = Policy.HandleResult<HttpResponseMessage>(response => !response.IsSuccessStatusCode)
-            .WaitAndRetryAsync(retryCount: 5, sleepDurationProvider: retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)),
-            onRetry: (outcome, timespan, retryCount, context) =>
-            {
-                _logger.LogInformation($"Retry {retryCount} due to {outcome.Result.StatusCode} at {DateTime.UtcNow}. Retrying in {timespan.TotalSeconds} seconds.");
-            });
-        return retryPolicy;
-    }
-
-    public IAsyncPolicy<HttpResponseMessage> GetCircuitBreakerPolicy()
-    {
-        AsyncCircuitBreakerPolicy<HttpResponseMessage> circuitPolicy = Policy.HandleResult<HttpResponseMessage>(response => !response.IsSuccessStatusCode)
-            .CircuitBreakerAsync(handledEventsAllowedBeforeBreaking: 3, durationOfBreak: TimeSpan.FromMinutes(2),
-            onBreak: (outcome, timespan) =>
-            {
-                _logger.LogInformation($"Circuit breaker opened for {timespan.TotalMinutes} minutes");
-            },
-            onReset: () =>
-            {
-                _logger.LogInformation("Circuit breaker reset, allowing requests to pass through again.");
-            });
-        return circuitPolicy;
-    }
-
-    public IAsyncPolicy<HttpResponseMessage> GetTimeoutPolicy()
-    {
-        AsyncTimeoutPolicy<HttpResponseMessage> timeoutPolicy = Policy.TimeoutAsync<HttpResponseMessage>(TimeSpan.FromMilliseconds(1500));
-        return timeoutPolicy;
-    }
-
+    
     public IAsyncPolicy<HttpResponseMessage> GetCombinedPolicy()
     {
-        var retryPolicy = GetRetryPolicy();
-        var circuitBreakerPolicy = GetCircuitBreakerPolicy();
-        var timeoutPolicy = GetTimeoutPolicy();
+        var retryPolicy = _pollyPolicies.GetRetryPolicy(5);
+        var circuitBreakerPolicy = _pollyPolicies.GetCircuitBreakerPolicy(3, TimeSpan.FromMinutes(2));
+        var timeoutPolicy = _pollyPolicies.GetTimeoutPolicy(TimeSpan.FromMilliseconds(1500));
         AsyncPolicyWrap<HttpResponseMessage> combinedPolicy =  Policy.WrapAsync(retryPolicy, circuitBreakerPolicy, timeoutPolicy);
         return combinedPolicy;
     }

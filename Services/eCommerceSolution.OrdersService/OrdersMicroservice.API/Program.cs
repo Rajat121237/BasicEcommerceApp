@@ -32,19 +32,13 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddTransient<IUsersMicroMicroservicePolicies, UsersMicroMicroservicePolicies>();
 builder.Services.AddTransient<IProductsMicroMicroservicePolicies, ProductsMicroMicroservicePolicies>();
+builder.Services.AddTransient<IPollyPolicies, PollyPolicies>();
+
+
 builder.Services.AddHttpClient<UsersMicroserviceClient>(client =>
 {
     client.BaseAddress = new Uri($"http://{builder.Configuration["UsersMicroserviceName"]}:{builder.Configuration["UsersMicroservicePort"]}");
 })
-//.AddPolicyHandler(
-//   builder.Services.BuildServiceProvider().GetRequiredService<IUsersMicroMicroservicePolicies>().GetRetryPolicy()
-//)
-//.AddPolicyHandler(
-//   builder.Services.BuildServiceProvider().GetRequiredService<IUsersMicroMicroservicePolicies>().GetCircuitBreakerPolicy()
-//)
-//.AddPolicyHandler(
-//   builder.Services.BuildServiceProvider().GetRequiredService<IUsersMicroMicroservicePolicies>().GetTimeoutPolicy()
-//);
 .AddPolicyHandler(
    builder.Services.BuildServiceProvider().GetRequiredService<IUsersMicroMicroservicePolicies>().GetCombinedPolicy()
 );
