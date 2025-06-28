@@ -21,7 +21,7 @@ public class UsersController : ControllerBase
     {
         // Simulate an error for demonstration purposes
         //await ErrorSimulator.GetError();
-        await ErrorSimulator.AddDelayInMilliseconds(10000);
+        //await ErrorSimulator.AddDelayInMilliseconds(10000);
 
         if (userID == Guid.Empty)
         {

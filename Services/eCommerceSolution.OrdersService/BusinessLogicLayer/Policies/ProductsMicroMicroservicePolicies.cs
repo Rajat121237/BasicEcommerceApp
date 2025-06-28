@@ -31,7 +31,7 @@ public class ProductsMicroMicroservicePolicies : IProductsMicroMicroservicePolic
                     QuantityInStock = 0
                 };
 
-                var response = new HttpResponseMessage(System.Net.HttpStatusCode.OK)
+                var response = new HttpResponseMessage(System.Net.HttpStatusCode.ServiceUnavailable)
                 {
                     Content = new StringContent(JsonSerializer.Serialize(product), encoding: Encoding.UTF8, "application/json")
                 };

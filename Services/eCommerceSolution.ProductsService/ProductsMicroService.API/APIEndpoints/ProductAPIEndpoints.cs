@@ -20,7 +20,7 @@ public static class ProductAPIEndpoints
             async (IProductsService productsService, Guid productID) =>
             {
                 //Simulate an error for demonstration purposes
-                await ErrorSimulator.GetError();
+                //await ErrorSimulator.GetError();
                 ProductResponse? product = await productsService.GetProductByCondition(temp => temp.ProductID == productID);
                 if (product == null)
                     return Results.NotFound($"Product with ID {productID} not found.");
