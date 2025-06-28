@@ -6,7 +6,7 @@
 
     //OrdersMicroservice Routes
     {
-      "UpstreamPathTemplate": "/gateway/Orders",
+      "UpstreamPathTemplate": "/gateway/Orders/",
       "UpstreamHttpMethod": [ "Get", "Post", "Options" ],
       "UpstreamScheme": "http",
       "DownstreamPathTemplate": "/api/Orders",
@@ -21,10 +21,14 @@
          DownstreamPathTemplate is the path that the Gatewayservice will use to access the other microservices.
          In this case, it will route to the Orders microservice at http://ordersmicroservice.api:8080/api/Orders.
         */
-      ]
+      ],
+      "FileCacheOptions": {
+        "TtlSeconds": 30,
+        "Region": "orders"
+      }
     },
     {
-      "UpstreamPathTemplate": "/gateway/Orders/search/orderid/{orderID}",
+      "UpstreamPathTemplate": "/gateway/Orders/search/orderid/{orderID}/",
       "UpstreamHttpMethod": [ "Get" ],
       "UpstreamScheme": "http",
       "DownstreamPathTemplate": "/api/Orders/search/orderid/{orderID}",
@@ -36,7 +40,7 @@
       ]
     },
     {
-      "UpstreamPathTemplate": "/gateway/Orders/search/productid/{productID}",
+      "UpstreamPathTemplate": "/gateway/Orders/search/productid/{productID}/",
       "UpstreamHttpMethod": [ "Get" ],
       "UpstreamScheme": "http",
       "DownstreamPathTemplate": "/api/Orders/search/productid/{productID}",
@@ -48,7 +52,7 @@
       ]
     },
     {
-      "UpstreamPathTemplate": "/gateway/Orders/search/orderDate/{orderDate}",
+      "UpstreamPathTemplate": "/gateway/Orders/search/orderDate/{orderDate}/",
       "UpstreamHttpMethod": [ "Get" ],
       "UpstreamScheme": "http",
       "DownstreamPathTemplate": "/api/Orders/search/orderDate/{orderDate}",
@@ -60,7 +64,7 @@
       ]
     },
     {
-      "UpstreamPathTemplate": "/gateway/Orders/search/userid/{userID}",
+      "UpstreamPathTemplate": "/gateway/Orders/search/userid/{userID}/",
       "UpstreamHttpMethod": [ "Get" ],
       "UpstreamScheme": "http",
       "DownstreamPathTemplate": "/api/Orders/search/userid/{userID}",
@@ -72,7 +76,7 @@
       ]
     },
     {
-      "UpstreamPathTemplate": "/gateway/Orders/{orderID}",
+      "UpstreamPathTemplate": "/gateway/Orders/{orderID}/",
       "UpstreamHttpMethod": [ "Put", "Delete", "Options" ],
       "UpstreamScheme": "http",
       "DownstreamPathTemplate": "/api/Orders/{orderID}",
@@ -86,7 +90,7 @@
 
     //ProductsMicroservice Routes
     {
-      "UpstreamPathTemplate": "/gateway/products",
+      "UpstreamPathTemplate": "/gateway/products/",
       "UpstreamHttpMethod": [ "Get", "Post", "Put", "Options" ],
       "UpstreamScheme": "http",
       "DownstreamPathTemplate": "/api/products",
@@ -95,10 +99,28 @@
           "Host": "products-microservice",
           "Port": 8080
         }
-      ]
+      ],
+      "QoSOptions": {
+        "ExceptionsAllowedBeforeBreaking": 3,
+        "DurationOfBreak": 10000,
+        "TimeoutValue": 5000
+      },
+      "RetryOptions": {
+        "RetryCount": 3,
+        "RetryOnServerError": true
+      },
+      "RateLimitOptions": {
+        "ClientWhitelist": [ "client1", "client2" ],
+        "ClientIdHeader": "Client-Id",
+        "PeriodTimespan": 30,
+        "EnableRateLimiting": true,
+        "Limit": 3,
+        "Period": "1m",
+        "HttpStatusCode": 429
+      }
     },
     {
-      "UpstreamPathTemplate": "/gateway/products/search/product-id/{productID}",
+      "UpstreamPathTemplate": "/gateway/products/search/product-id/{productID}/",
       "UpstreamHttpMethod": [ "Get" ],
       "UpstreamScheme": "http",
       "DownstreamPathTemplate": "/api/products/search/product-id/{productID}",
@@ -110,7 +132,7 @@
       ]
     },
     {
-      "UpstreamPathTemplate": "/gateway/products/search/{SearchString}",
+      "UpstreamPathTemplate": "/gateway/products/search/{SearchString}/",
       "UpstreamHttpMethod": [ "Get" ],
       "UpstreamScheme": "http",
       "DownstreamPathTemplate": "/api/products/search/{SearchString}",
@@ -122,7 +144,7 @@
       ]
     },
     {
-      "UpstreamPathTemplate": "/gateway/products/{ProductID}",
+      "UpstreamPathTemplate": "/gateway/products/{ProductID}/",
       "UpstreamHttpMethod": [ "Delete", "Options" ],
       "UpstreamScheme": "http",
       "DownstreamPathTemplate": "/api/products/{ProductID}",
@@ -136,7 +158,7 @@
 
     //UsersMicroservice Routes
     {
-      "UpstreamPathTemplate": "/gateway/Auth/register",
+      "UpstreamPathTemplate": "/gateway/Auth/register/",
       "UpstreamHttpMethod": [ "Post", "Options" ],
       "UpstreamScheme": "http",
       "DownstreamPathTemplate": "/api/Auth/register",
@@ -148,7 +170,7 @@
       ]
     },
     {
-      "UpstreamPathTemplate": "/gateway/Auth/login",
+      "UpstreamPathTemplate": "/gateway/Auth/login/",
       "UpstreamHttpMethod": [ "Post", "Options" ],
       "UpstreamScheme": "http",
       "DownstreamPathTemplate": "/api/Auth/login",
@@ -160,7 +182,7 @@
       ]
     },
     {
-      "UpstreamPathTemplate": "/gateway/Users/{userID}",
+      "UpstreamPathTemplate": "/gateway/Users/{userID}/",
       "UpstreamHttpMethod": [ "Get" ],
       "UpstreamScheme": "http",
       "DownstreamPathTemplate": "/api/Users/{userID}",
