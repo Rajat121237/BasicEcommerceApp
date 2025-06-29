@@ -2,7 +2,7 @@
 using eCommerce.OrdersMicroservice.BusinessLogicLayer.DTO;
 using eCommerce.OrdersMicroservice.DataAccessLayer.Entities;
 
-namespace eCommerce.ordersMicroservice.BusinessLogicLayer.Mappers;
+namespace eCommerce.OrdersMicroservice.BusinessLogicLayer.Mappers;
 
 public class OrderItemToOrderItemResponseMappingProfile : Profile
 {

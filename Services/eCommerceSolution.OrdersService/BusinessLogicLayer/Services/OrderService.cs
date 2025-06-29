@@ -8,7 +8,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using MongoDB.Driver;
 
-namespace eCommerce.ordersMicroservice.BusinessLogicLayer.Services;
+namespace eCommerce.OrdersMicroservice.BusinessLogicLayer.Services;
 public class OrdersService : IOrdersService
 {
 

@@ -3,6 +3,7 @@ using eCommerce.BusinessLogicLayer.DTO;
 using eCommerce.BusinessLogicLayer.ServiceContracts;
 using eCommerce.DataAccessLayer.Entities;
 using eCommerce.DataAccessLayer.RepositoryContracts;
+using eCommerce.ProductsService.BusinessLogicLayer.RabbitMQ;
 using FluentValidation;
 using FluentValidation.Results;
 using System.Linq.Expressions;
@@ -14,15 +15,18 @@ public class ProductsService : IProductsService
     private readonly IProductsRepository _productsRepository;
     private readonly IValidator<ProductAddRequest> _productAddRequestValidator;
     private readonly IValidator<ProductUpdateRequest> _productUpdateRequestValidator;
+    private readonly IRabbitMQPublisher _rabbitMQPublisher;
 
     public ProductsService(IMapper mapper, IProductsRepository productsRepository,
         IValidator<ProductAddRequest> productAddRequestValidator,
-        IValidator<ProductUpdateRequest> productUpdateRequestValidator)
+        IValidator<ProductUpdateRequest> productUpdateRequestValidator,
+        IRabbitMQPublisher rabbitMQPublisher)
     {
         _mapper = mapper;
         _productsRepository = productsRepository;
         _productAddRequestValidator = productAddRequestValidator;
         _productUpdateRequestValidator = productUpdateRequestValidator;
+        _rabbitMQPublisher = rabbitMQPublisher;
     }
 
     public async Task<ProductResponse?> AddProduct(ProductAddRequest productAddRequest)
@@ -107,7 +111,17 @@ public class ProductsService : IProductsService
 
         //Map from ProductUpdateRequest to Product type
         Product product = _mapper.Map<Product>(productUpdateRequest); //Invokes ProductUpdateRequestToProductMappingProfile
+
+        //Check if product name is changed
+        bool isProductNameChanged = productUpdateRequest.ProductName != existingProduct.ProductName;
         Product? updatedProduct = await _productsRepository.UpdateProduct(product);
+        if (isProductNameChanged)
+        {
+            string routingKey = "product.update.name";
+            var message = new ProductNameUpdateMessage(product.ProductID, product.ProductName);
+            _rabbitMQPublisher.Publish(routingKey, message);
+        }
+
         ProductResponse? updatedProductResponse = _mapper.Map<ProductResponse>(updatedProduct);
         return updatedProductResponse;
     }
